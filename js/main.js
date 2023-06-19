@@ -15,7 +15,7 @@ function getRandomId (min, max) {
 
   return function () {
     if (previusValues.length >= (max - min + 1)) {
-      return 0;
+      return -1;
     }
 
     let currentValue = getRandomInteger(min, max);
