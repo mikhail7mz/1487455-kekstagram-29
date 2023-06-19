@@ -1,40 +1,36 @@
-const checkIsStringLengthValid = (string, maxLength) => (string.length <= maxLength);
+const checkStringLength = (string, maxLength) => string.length <= maxLength;
 
 // Testing
 /*
-console.log(checkIsStringLengthValid('проверяемая строка', 20)); // true
-console.log(checkIsStringLengthValid('проверяемая строка', 18)); // true
-console.log(checkIsStringLengthValid('проверяемая строка', 10)); // false
+console.log(checkStringLength('проверяемая строка', 20)); // true
+console.log(checkStringLength('проверяемая строка', 18)); // true
+console.log(checkStringLength('проверяемая строка', 10)); // false
 */
 
-const checkIsStringpalindrome = (string) => {
-  const stringNormalized = (string) ? string.replaceAll(' ', '').toLowerCase() : '';
+const isPalindrome = (string = '') => {
+  string = string.replaceAll(' ', '').toLowerCase();
   let stringReversed = '';
 
-  for (let i = stringNormalized.length - 1; i >= 0; i--) {
-    stringReversed += stringNormalized[i];
+  for (let i = string.length - 1; i >= 0; i--) {
+    stringReversed += string[i];
   }
 
-  return stringNormalized === stringReversed;
+  return string === stringReversed;
 };
 
 // Testing
 /*
-console.log(checkIsStringpalindrome()); // true
-console.log(checkIsStringpalindrome('ДовОд')); // true
-console.log(checkIsStringpalindrome('Кекс')); // false
+console.log(isPalindrome()); // true
+console.log(isPalindrome('ДовОд')); // true
+console.log(isPalindrome('Кекс')); // false
 */
 
 const extractNumbers = (string) => {
-  if (string === undefined || string === null) {
-    return NaN;
-  }
-
-  const stringNormalized = string.toString();
+  string = String(string);
   let result = '';
 
-  for (let i = 0; i < stringNormalized.length; i++) {
-    const number = parseInt(stringNormalized[i], 10);
+  for (let i = 0; i < string.length; i++) {
+    const number = parseInt(string[i], 10);
     result += (!Number.isNaN(number)) ? number : '';
   }
 
