@@ -49,3 +49,7 @@ console.log(extractNumbers(2023)); // 2023
 console.log(extractNumbers(-1)); // 1
 console.log(extractNumbers(1.5)); // 15
 */
+
+checkStringLength('проверяемая строка', 20);
+isPalindrome();
+extractNumbers();
