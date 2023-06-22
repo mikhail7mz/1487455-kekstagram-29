@@ -1,12 +1,5 @@
 const checkStringLength = (string, maxLength) => string.length <= maxLength;
 
-// Testing
-/*
-console.log(checkStringLength('проверяемая строка', 20)); // true
-console.log(checkStringLength('проверяемая строка', 18)); // true
-console.log(checkStringLength('проверяемая строка', 10)); // false
-*/
-
 const isPalindrome = (string = '') => {
   string = string.replaceAll(' ', '').toLowerCase();
   let stringReversed = '';
@@ -17,13 +10,6 @@ const isPalindrome = (string = '') => {
 
   return string === stringReversed;
 };
-
-// Testing
-/*
-console.log(isPalindrome()); // true
-console.log(isPalindrome('ДовОд')); // true
-console.log(isPalindrome('Кекс')); // false
-*/
 
 const extractNumbers = (string) => {
   string = String(string);
@@ -37,19 +23,21 @@ const extractNumbers = (string) => {
   return parseInt(result, 10);
 };
 
-// Testing
-/*
-console.log(extractNumbers('2023 год')); // 2023
-console.log(extractNumbers('ECMAScript 2022')); // 2022
-console.log(extractNumbers('1 кефир, 0.5 батона')); // 105
-console.log(extractNumbers('агент 007')); // 7
-console.log(extractNumbers('а я томат')); // NaN
+const convertTimeToMinutes = (time) => {
+  const arrTime = time.split(':');
+  return parseInt(arrTime[0], 10) * 60 + parseInt(arrTime[1], 10);
+};
 
-console.log(extractNumbers(2023)); // 2023
-console.log(extractNumbers(-1)); // 1
-console.log(extractNumbers(1.5)); // 15
-*/
+const isMeetingAtTime = (dayStart, dayEnd, meetingStart, meetingDuration) => {
+  dayStart = convertTimeToMinutes(dayStart);
+  dayEnd = convertTimeToMinutes(dayEnd);
+  meetingStart = convertTimeToMinutes(meetingStart);
+  const meetingEnd = meetingStart + meetingDuration;
+
+  return (dayStart <= meetingStart && meetingEnd <= dayEnd);
+};
 
 checkStringLength('проверяемая строка', 20);
 isPalindrome();
 extractNumbers();
+isMeetingAtTime('08:00', '17:30', '14:00', 90);
