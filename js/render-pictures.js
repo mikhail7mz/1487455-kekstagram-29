@@ -1,4 +1,5 @@
 import { createPhotos } from './create-photos.js';
+import { renderBigPicture } from './big-picture.js';
 
 const photos = createPhotos();
 const pictures = document.querySelector('.pictures');
@@ -12,6 +13,7 @@ const createPicture = (photo) => {
   image.alt = description;
   picture.querySelector('.picture__likes').textContent = likes;
   picture.querySelector('.picture__comments').textContent = comments.length;
+  picture.addEventListener('click', () => renderBigPicture(photo));
   return picture;
 };
 
