@@ -1,7 +1,13 @@
+const COMMENTS_NUMBER = 5;
+
 const bigPicture = document.querySelector('.big-picture');
 const buttonClose = bigPicture.querySelector('.big-picture__cancel');
 const commentsList = bigPicture.querySelector('.social__comments');
 const commentTemplate = commentsList.querySelector('.social__comment');
+const commentsCounter = bigPicture.querySelector('.social__comment-count');
+const commentsLoader = bigPicture.querySelector('.comments-loader');
+let commentsData = [];
+let showingComments = 0;
 
 const onButtonCloseClick = () => closeBigPicture();
 
@@ -11,21 +17,7 @@ const onDocumentKeyDown = (evt) => {
   }
 };
 
-/*
-  Функции обработчиков (onButtonCloseClick и onDocumentKeyDown) и closeBigPicture ссылаются друг на друга
-  Из-за этого ругается линтер. Ошибка: function was used before it was defined
-  Поэтому closeBigPicture написал декларативным способом а не стрелочным
-*/
-function closeBigPicture () {
-  document.body.classList.remove('modal-open');
-  bigPicture.classList.add('hidden');
-
-  buttonClose.removeEventListener('click', onButtonCloseClick);
-  document.removeEventListener('keydown', onDocumentKeyDown);
-}
-
-const renderComment = (data) => {
-  const {avatar, message, name} = data;
+const createComment = ({avatar, message, name}) => {
   const comment = commentTemplate.cloneNode(true);
   comment.querySelector('.social__text').textContent = message;
   const socialPicture = comment.querySelector('.social__picture');
@@ -34,28 +26,62 @@ const renderComment = (data) => {
   return comment;
 };
 
-const fillBigPicture = (data) => {
-  const {url, description, likes, comments} = data;
+const fillCommentCounter = () => {
+  commentsCounter.innerHTML = `${showingComments} из <span class="comments-count">${commentsData.length}</span> комментариев`;
+};
+
+const setButtonState = () => {
+  if (showingComments >= commentsData.length) {
+    commentsLoader.classList.add('hidden');
+    return;
+  }
+  commentsLoader.classList.remove('hidden');
+};
+
+const renderComments = () => {
   const commentsFragment = document.createDocumentFragment();
+  const newComments = commentsData.slice(showingComments, showingComments + COMMENTS_NUMBER);
+  showingComments = Math.min(showingComments + COMMENTS_NUMBER, commentsData.length);
+  newComments.forEach((comment) => commentsFragment.append(createComment(comment)));
+  commentsList.append(commentsFragment);
+  fillCommentCounter();
+  setButtonState();
+};
+
+const onCommentsLoaderClick = (evt) => {
+  evt.preventDefault();
+  renderComments();
+};
+
+function closeBigPicture () {
+  document.body.classList.remove('modal-open');
+  bigPicture.classList.add('hidden');
+  commentsLoader.removeEventListener('click', onCommentsLoaderClick);
+  buttonClose.removeEventListener('click', onButtonCloseClick);
+  document.removeEventListener('keydown', onDocumentKeyDown);
+  showingComments = 0;
+}
+
+const openBigPicture = () => {
+  commentsLoader.addEventListener('click', onCommentsLoaderClick);
+  buttonClose.addEventListener('click', onButtonCloseClick);
+  document.addEventListener('keydown', onDocumentKeyDown);
+  bigPicture.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+};
+
+const fillBigPicture = ({url, description, likes}) => {
   bigPicture.querySelector('.big-picture__img img').src = url;
   bigPicture.querySelector('.likes-count').textContent = likes;
-  bigPicture.querySelector('.comments-count').textContent = comments.length;
   bigPicture.querySelector('.social__caption').textContent = description;
-  comments.forEach((comment) => commentsFragment.appendChild(renderComment(comment)));
-  commentsList.replaceChildren(commentsFragment);
+  commentsList.innerHTML = '';
+  renderComments();
 };
 
 const renderBigPicture = (data) => {
+  commentsData = data.comments;
   fillBigPicture(data);
-
-  buttonClose.addEventListener('click', onButtonCloseClick);
-  document.addEventListener('keydown', onDocumentKeyDown);
-
-  bigPicture.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-
-  bigPicture.querySelector('.social__comment-count').classList.add('hidden');
-  bigPicture.querySelector('.comments-loader').classList.add('hidden');
+  openBigPicture();
 };
 
 export {renderBigPicture};
