@@ -1,5 +1,8 @@
 const HASHTAGS_MAX_LENGTH = 5;
 const DESCRIPTION_MAX_LENGTH = 140;
+const SCALE_MIN = 25;
+const SCALE_STEP = 25;
+const SCALE_MAX = 100;
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = uploadForm.querySelector('.img-upload__input');
@@ -7,6 +10,31 @@ const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
 const closeFormButton = uploadForm.querySelector('.img-upload__cancel');
 const imageHashtags = uploadForm.querySelector('.text__hashtags');
 const imageDescription = uploadForm.querySelector('.text__description');
+
+const scaleControlSmaller = uploadForm.querySelector('.scale__control--smaller');
+const scaleControlValue = uploadForm.querySelector('.scale__control--value');
+const scaleControlBigger = uploadForm.querySelector('.scale__control--bigger');
+const imagePreview = uploadForm.querySelector('.img-upload__preview');
+let scaleValue = parseInt(scaleControlValue.value, 10);
+
+const setScaleValue = () => {
+  scaleControlValue.value = `${scaleValue}%`;
+  imagePreview.style.transform = `scale(${scaleValue / 100})`;
+};
+
+scaleControlSmaller.addEventListener('click', () => {
+  if (scaleValue !== SCALE_MIN) {
+    scaleValue -= SCALE_STEP;
+    setScaleValue();
+  }
+});
+
+scaleControlBigger.addEventListener('click', () => {
+  if (scaleValue !== SCALE_MAX) {
+    scaleValue += SCALE_STEP;
+    setScaleValue();
+  }
+});
 
 const pristine = new Pristine(uploadForm);
 let formStatus = '';
