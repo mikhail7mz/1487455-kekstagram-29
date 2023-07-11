@@ -17,33 +17,55 @@ const scaleControlBigger = uploadForm.querySelector('.scale__control--bigger');
 const imagePreview = uploadForm.querySelector('.img-upload__preview');
 let scaleValue = parseInt(scaleControlValue.value, 10);
 
+const pristine = new Pristine(uploadForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--error',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'text__error'
+});
+
+const normalizeHashtags = (hashtags) => hashtags.trim().split(' ').filter((tag) => Boolean(tag));
+
+const validateHashtagsByPattern = (hashtags) => {
+  const hashtagPattern = /^#[a-zа-яё0-9]{1,19}$/i;
+  return (hashtags.length === 0) || normalizeHashtags(hashtags).every((hashtag) => hashtagPattern.test(hashtag));
+};
+
+const validateHashtagsByLength = (hashtags) => normalizeHashtags(hashtags).length <= HASHTAGS_MAX_LENGTH;
+
+const validateHashtagsByUniqueness = (hashtags) => {
+  hashtags = normalizeHashtags(hashtags);
+  return hashtags.length === new Set(hashtags).size;
+};
+
+const validateDescription = (decription) => decription.length <= DESCRIPTION_MAX_LENGTH;
+
+pristine.addValidator(imageHashtags, validateHashtagsByPattern, 'введён невалидный хэш-тег');
+pristine.addValidator(imageHashtags, validateHashtagsByLength, 'превышено количество хэш-тегов');
+pristine.addValidator(imageHashtags, validateHashtagsByUniqueness, 'хэш-теги повторяются');
+pristine.addValidator(imageDescription, validateDescription, 'комментарий не длинее 140 символов');
+
 const setScaleValue = () => {
   scaleControlValue.value = `${scaleValue}%`;
   imagePreview.style.transform = `scale(${scaleValue / 100})`;
 };
 
 scaleControlSmaller.addEventListener('click', () => {
-  if (scaleValue !== SCALE_MIN) {
-    scaleValue -= SCALE_STEP;
-    setScaleValue();
-  }
+  scaleValue = Math.max(scaleValue - SCALE_STEP, SCALE_MIN);
+  setScaleValue();
 });
 
 scaleControlBigger.addEventListener('click', () => {
-  if (scaleValue !== SCALE_MAX) {
-    scaleValue += SCALE_STEP;
-    setScaleValue();
-  }
+  scaleValue = Math.min(scaleValue + SCALE_STEP, SCALE_MAX);
+  setScaleValue();
 });
-
-const pristine = new Pristine(uploadForm);
-let formStatus = '';
-let notificationNumber = 0;
 
 const closeEditImageForm = () => {
   uploadOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   uploadForm.reset();
+  pristine.reset();
   document.removeEventListener('keydown', onDocumentKeyDown);
   closeFormButton.removeEventListener('click', closeEditImageForm);
 };
@@ -61,80 +83,11 @@ function onDocumentKeyDown (evt) {
   }
 }
 
-const validateDescription = (decription) => decription.length <= DESCRIPTION_MAX_LENGTH;
-
-const getHashtagArray = (hashtags) => hashtags.split(' ');
-
-const validateHashtagsByPattern = (hashtags) => {
-  const hashtagPattern = /^#[a-zа-яё0-9]{1,19}$/i;
-  return (hashtags.length === 0) || getHashtagArray(hashtags).every((hashtag) => hashtagPattern.test(hashtag));
-};
-
-const validateHashtagsLength = (hashtags) => getHashtagArray(hashtags).length <= HASHTAGS_MAX_LENGTH;
-
-const validateHashtagsUniqueness = (hashtags) => {
-  hashtags = getHashtagArray(hashtags);
-  return hashtags.length === new Set(hashtags).size;
-};
-
-pristine.addValidator(imageHashtags, validateHashtagsByPattern, 'введён невалидный хэш-тег');
-pristine.addValidator(imageHashtags, validateHashtagsLength, 'превышено количество хэш-тегов');
-pristine.addValidator(imageHashtags, validateHashtagsUniqueness, 'хэш-теги повторяются');
-
-pristine.addValidator(imageDescription, validateDescription, 'комментарий не длинее 140 символов');
-
-const onNotificationKeydown = (evt) => {
-  removeNotification();
-  evt.stopPropagation();
-};
-
-const onNotificationOverlayClick = (evt) => {
-  if (evt.target.classList.contains(formStatus)) {
-    removeNotification();
-  }
-};
-
-function removeNotification () {
-  const notifications = document.querySelectorAll(`.${formStatus}`);
-  notifications[notificationNumber - 1].remove();
-  notificationNumber--;
-
-  if (!notificationNumber) {
-    document.removeEventListener('keydown', onNotificationKeydown, true);
-    formStatus = '';
-  }
-}
-
-const createNotification = (message = '') => {
-  const notificationTemplate = document.querySelector(`#${formStatus}`).content.querySelector(`.${formStatus}`);
-  const notification = notificationTemplate.cloneNode(true);
-  if (message) {
-    notification.querySelector(`.${formStatus}__title`).textContent = message;
-  }
-  notification.querySelector(`.${formStatus}__button`).addEventListener('click', removeNotification);
-  notification.addEventListener('click', onNotificationOverlayClick);
-  return notification;
-};
-
-const showNotification = (message = '') => {
-  document.body.append(createNotification(message));
-  document.addEventListener('keydown', onNotificationKeydown, true);
-};
-
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
-    formStatus = 'success';
-    showNotification();
     closeEditImageForm();
-    notificationNumber++;
-    return;
   }
-
-  formStatus = 'error';
-  const errors = pristine.getErrors().map((item) => item.errors).flat();
-  errors.forEach((message) => showNotification(message));
-  notificationNumber = errors.length;
 };
 
 const uploadPhoto = () => {
