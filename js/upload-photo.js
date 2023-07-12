@@ -3,6 +3,38 @@ const DESCRIPTION_MAX_LENGTH = 140;
 const SCALE_MIN = 25;
 const SCALE_STEP = 25;
 const SCALE_MAX = 100;
+const EFFECTS = {
+  chrome: {
+    createFilterValue: (value) => `grayscale(${value})`,
+    min: 0,
+    max: 1,
+    step: 0.1
+  },
+  sepia: {
+    createFilterValue: (value) => `sepia(${value})`,
+    min: 0,
+    max: 1,
+    step: 0.1
+  },
+  marvin: {
+    createFilterValue: (value) => `invert(${value}%)`,
+    min: 0,
+    max: 100,
+    step: 1
+  },
+  phobos: {
+    createFilterValue: (value) => `blur(${value}px)`,
+    min: 0,
+    max: 3,
+    step: 0.1
+  },
+  heat: {
+    createFilterValue: (value) => `brightness(${value})`,
+    min: 1,
+    max: 3,
+    step: 0.1
+  }
+};
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = uploadForm.querySelector('.img-upload__input');
@@ -16,6 +48,50 @@ const scaleControlValue = uploadForm.querySelector('.scale__control--value');
 const scaleControlBigger = uploadForm.querySelector('.scale__control--bigger');
 const imagePreview = uploadForm.querySelector('.img-upload__preview');
 let scaleValue = parseInt(scaleControlValue.value, 10);
+
+const effects = uploadForm.querySelector('.effects__list');
+const effectSliderContainer = uploadForm.querySelector('.img-upload__effect-level');
+const effectSlider = uploadForm.querySelector('.effect-level__slider');
+const effectSaturation = uploadForm.querySelector('.effect-level__value');
+
+const removeEffects = () => {
+  if (effectSlider.noUiSlider) {
+    effectSlider.noUiSlider.destroy();
+  }
+  effectSliderContainer.classList.add('hidden');
+  imagePreview.style.filter = 'none';
+};
+
+effects.addEventListener('change', (evt) => {
+  removeEffects();
+  if (evt.target.value === 'none') {
+    return;
+  }
+
+  const effect = EFFECTS[evt.target.value];
+
+  noUiSlider.create(effectSlider, {
+    range: {
+      'min': effect.min,
+      'max': effect.max
+    },
+    step: effect.step,
+    start: effect.max,
+    connect: 'lower',
+    format: {
+      to: (value) => value,
+      from: (value) => parseFloat(value, 10)
+    }
+  });
+
+  effectSlider.noUiSlider.on('update', () => {
+    const saturation = effectSlider.noUiSlider.get();
+    imagePreview.style.filter = effect.createFilterValue(saturation);
+    effectSaturation.value = saturation;
+  });
+
+  effectSliderContainer.classList.remove('hidden');
+});
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -46,6 +122,10 @@ pristine.addValidator(imageHashtags, validateHashtagsByLength, 'превышен
 pristine.addValidator(imageHashtags, validateHashtagsByUniqueness, 'хэш-теги повторяются');
 pristine.addValidator(imageDescription, validateDescription, 'комментарий не длинее 140 символов');
 
+const resetScaleValue = () => {
+  scaleValue = SCALE_MAX;
+};
+
 const setScaleValue = () => {
   scaleControlValue.value = `${scaleValue}%`;
   imagePreview.style.transform = `scale(${scaleValue / 100})`;
@@ -66,13 +146,17 @@ const closeEditImageForm = () => {
   document.body.classList.remove('modal-open');
   uploadForm.reset();
   pristine.reset();
+  removeEffects();
+  resetScaleValue();
   document.removeEventListener('keydown', onDocumentKeyDown);
   closeFormButton.removeEventListener('click', closeEditImageForm);
 };
 
 const openEditImageForm = () => {
+  setScaleValue();
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
+  effectSliderContainer.classList.add('hidden');
   document.addEventListener('keydown', onDocumentKeyDown);
   closeFormButton.addEventListener('click', closeEditImageForm);
 };
