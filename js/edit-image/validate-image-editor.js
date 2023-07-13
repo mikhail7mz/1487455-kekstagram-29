@@ -17,7 +17,7 @@ const pristine = new Pristine(imageEditorForm, {
   errorTextClass: 'text__error'
 });
 
-const normalizeHashtags = (hashtags) => hashtags.trim().split(' ').filter((tag) => Boolean(tag));
+const normalizeHashtags = (hashtags) => hashtags.trim().toLowerCase().split(' ').filter((tag) => Boolean(tag));
 
 const validateHashtagsByPattern = (hashtags) => (hashtags.length === 0) || normalizeHashtags(hashtags).every((hashtag) => HASHTAG_PATTERN.test(hashtag));
 
