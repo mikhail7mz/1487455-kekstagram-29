@@ -1,7 +1,7 @@
-import { createPhotos } from './create-photos.js';
 import { renderBigPicture } from './big-picture.js';
+import { getData } from '../data.js';
+import { showNotification } from '../utils.js';
 
-const photos = createPhotos();
 const pictures = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
@@ -18,9 +18,13 @@ const createPicture = (photo) => {
 };
 
 const renderPictures = () => {
-  const picturesFragment = document.createDocumentFragment();
-  photos.forEach((photo) => picturesFragment.appendChild(createPicture(photo)));
-  pictures.appendChild(picturesFragment);
+  getData()
+    .then((photos) => {
+      const picturesFragment = document.createDocumentFragment();
+      photos.forEach((photo) => picturesFragment.appendChild(createPicture(photo)));
+      pictures.appendChild(picturesFragment);
+    })
+    .catch((err) => showNotification('error', err.message));
 };
 
 export {renderPictures};

@@ -22,4 +22,14 @@ const getRandomId = (min, max) => {
   };
 };
 
-export {getRandomInteger, getRandomArrayElement, getRandomId};
+const showNotification = (status, message = '') => {
+  const template = document.querySelector(`#${status}`).content.querySelector(`.${status}`);
+  const notification = template.cloneNode(true);
+  if (message) {
+    notification.querySelector('[class$="__title"]').textContent = message;
+  }
+  notification.querySelector('[class$="__button"]').addEventListener('click', () => notification.remove());
+  document.body.append(notification);
+};
+
+export {getRandomInteger, getRandomArrayElement, getRandomId, showNotification};
