@@ -1,10 +1,15 @@
 import { resetScaleValue, addScaleEditor } from './scale-editor.js';
-import { initEffects, updateEffects } from './effects-editor.js';
+import { initEffects } from './effects-editor.js';
 import { pristineReset, pristineValidate, pristineInit } from './validate-image-editor.js';
 import { sendData } from '../data.js';
-import { showNotification } from '../utils.js';
+import { showNotification } from '../notifications.js';
 
-const buttonText = {
+const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
+const NOTIFICATION_STATUS = {
+  success: 'success',
+  error: 'error'
+};
+const SUBMIT_BUTTON_TEXT = {
   TRUE: 'Опубликовать',
   FALSE: 'Опубликовывается...'
 };
@@ -19,10 +24,10 @@ const submitButton = imageEditorForm.querySelector('.img-upload__submit');
 
 const setButtonState = (state = true) => {
   submitButton.disabled = !state;
-  submitButton.textContent = buttonText[state.toString().toUpperCase()];
+  submitButton.textContent = SUBMIT_BUTTON_TEXT[state.toString().toUpperCase()];
 };
 
-const onEffectsListChange = (event) => updateEffects(event.target.value);
+const onEffectsListChange = (event) => initEffects(event.target.value);
 
 const closeEditImageForm = () => {
   overlay.classList.add('hidden');
@@ -33,7 +38,7 @@ const closeEditImageForm = () => {
   pristineReset();
   resetScaleValue();
   setButtonState();
-  updateEffects(currentEffectValue);
+  initEffects(currentEffectValue);
 };
 
 const openEditImageForm = () => {
@@ -49,18 +54,20 @@ function onDocumentKeyDown (evt) {
   }
 }
 
+const onSendDataSuccess = () => {
+  showNotification(NOTIFICATION_STATUS.success);
+  closeEditImageForm();
+};
+
+const onSendDataError = () => {
+  showNotification(NOTIFICATION_STATUS.error);
+  setButtonState();
+};
+
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristineValidate()) {
-    sendData(new FormData(evt.target))
-      .then(() => {
-        showNotification('success');
-        closeEditImageForm();
-      })
-      .catch(() => {
-        showNotification('error');
-        setButtonState();
-      });
+    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(evt.target));
     setButtonState(false);
   }
 };

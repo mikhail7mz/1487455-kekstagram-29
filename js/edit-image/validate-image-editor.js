@@ -19,7 +19,12 @@ const pristine = new Pristine(imageEditorForm, {
 
 const normalizeHashtags = (hashtags) => hashtags.trim().toLowerCase().split(' ').filter((tag) => Boolean(tag));
 
-const validateHashtagsByPattern = (hashtags) => (hashtags.length === 0) || normalizeHashtags(hashtags).every((hashtag) => HASHTAG_PATTERN.test(hashtag));
+const validateHashtagsByPattern = (hashtags) => {
+  if (hashtags.length === 0) {
+    return true;
+  }
+  return normalizeHashtags(hashtags).every((hashtag) => HASHTAG_PATTERN.test(hashtag));
+};
 
 const validateHashtagsByLength = (hashtags) => normalizeHashtags(hashtags).length <= HASHTAGS_MAX_LENGTH;
 
