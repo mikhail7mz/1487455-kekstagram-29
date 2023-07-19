@@ -47,19 +47,29 @@ const slider = document.querySelector('.effect-level__slider');
 const effectSaturation = document.querySelector('.effect-level__value');
 
 const setContainerState = (value) => {
-  if (value === 'none') {
+  if (value === 'none' || !value) {
     sliderContainer.classList.add('hidden');
+    imagePreview.style.filter = 'none';
     return;
   }
   sliderContainer.classList.remove('hidden');
 };
 
-const updateSlider = (name, unit) => {
-  if (!name) {
-    imagePreview.style.filter = 'none';
-    return;
-  }
-
+const createSlider = (effectsName) => {
+  const {min, max, step, name, unit} = EFFECTS[effectsName] || EFFECTS.default;
+  noUiSlider.create(slider, {
+    range: {
+      min,
+      max
+    },
+    step,
+    start: max,
+    connect: 'lower',
+    format: {
+      to: (value) => value,
+      from: (value) => parseFloat(value, 10)
+    }
+  });
   slider.noUiSlider.on('update', () => {
     const saturation = slider.noUiSlider.get();
     imagePreview.style.filter = `${name}(${saturation}${unit})`;
@@ -68,37 +78,11 @@ const updateSlider = (name, unit) => {
 };
 
 const initEffects = (effectsName) => {
-  const {min, max, step, name, unit} = EFFECTS[effectsName] || EFFECTS.default;
+  if (slider.noUiSlider) {
+    slider.noUiSlider.destroy();
+  }
   setContainerState(effectsName);
-  noUiSlider.create(slider, {
-    range: {
-      'min': min,
-      'max': max
-    },
-    step: step,
-    start: max,
-    connect: 'lower',
-    format: {
-      to: (value) => value,
-      from: (value) => parseFloat(value, 10)
-    }
-  });
-  updateSlider(name, unit);
+  createSlider(effectsName);
 };
 
-const updateEffects = (value) => {
-  const {min, max, step, name, unit} = EFFECTS[value] || EFFECTS.default;
-  setContainerState(value);
-  slider.noUiSlider.updateOptions({
-    range: {
-      'min': min,
-      'max': max
-    },
-    step: step,
-    start: max,
-  });
-
-  updateSlider(name, unit);
-};
-
-export {initEffects, updateEffects};
+export {initEffects};

@@ -1,6 +1,27 @@
 import { resetScaleValue, addScaleEditor } from './scale-editor.js';
-import { initEffects, updateEffects } from './effects-editor.js';
+import { initEffects } from './effects-editor.js';
 import { pristineReset, pristineValidate, pristineInit } from './validate-image-editor.js';
+import { sendData } from '../utils/data.js';
+import { showNotification } from '../utils/notifications.js';
+
+const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
+const NOTIFICATION_SETTINGS = {
+  success: {
+    status: 'success',
+    message: 'Изображение успешно загружено',
+    buttonText: 'Круто!'
+  },
+  error: {
+    status: 'error',
+    message: 'Ошибка загрузки файла',
+    buttonText: 'Попробовать ещё раз'
+  }
+};
+
+const SUBMIT_BUTTON_TEXT = {
+  TRUE: 'Опубликовать',
+  FALSE: 'Опубликовывается...'
+};
 
 const imageEditorForm = document.querySelector('.img-upload__form');
 const imageField = imageEditorForm.querySelector('.img-upload__input');
@@ -8,37 +29,57 @@ const overlay = imageEditorForm.querySelector('.img-upload__overlay');
 const closeFormButton = imageEditorForm.querySelector('.img-upload__cancel');
 const effectsList = imageEditorForm.querySelector('.effects__list');
 const currentEffectValue = effectsList.querySelector('input:checked').value;
+const submitButton = imageEditorForm.querySelector('.img-upload__submit');
 
-const onEffectsListChange = (event) => updateEffects(event.target.value);
+const setButtonState = (state = true) => {
+  submitButton.disabled = !state;
+  submitButton.textContent = SUBMIT_BUTTON_TEXT[state.toString().toUpperCase()];
+};
+
+const onEffectsListChange = (event) => initEffects(event.target.value);
 
 const closeEditImageForm = () => {
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeyDown);
+  document.removeEventListener('keydown', onDocumentKeydown);
   closeFormButton.removeEventListener('click', closeEditImageForm);
   imageEditorForm.reset();
   pristineReset();
   resetScaleValue();
-  updateEffects(currentEffectValue);
+  setButtonState();
+  initEffects(currentEffectValue);
 };
 
 const openEditImageForm = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeyDown);
+  document.addEventListener('keydown', onDocumentKeydown);
   closeFormButton.addEventListener('click', closeEditImageForm);
 };
 
-function onDocumentKeyDown (evt) {
-  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper')) {
+function onDocumentKeydown (evt) {
+  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
   }
 }
 
+const onSendDataSuccess = () => {
+  const {status, message, buttonText} = NOTIFICATION_SETTINGS.success;
+  showNotification(status, message, buttonText);
+  closeEditImageForm();
+};
+
+const onSendDataError = () => {
+  const {status, message, buttonText} = NOTIFICATION_SETTINGS.error;
+  showNotification(status, message, buttonText);
+  setButtonState();
+};
+
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristineValidate()) {
-    closeEditImageForm();
+    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(evt.target));
+    setButtonState(false);
   }
 };
 
