@@ -1,10 +1,5 @@
 const DEFAULT_METHOD = 'POST';
 
-const catchDefault = (error, onGetError) => {
-  onGetError(error);
-  throw new Error(error);
-};
-
 const getData = (url, onGetSuccess, onGetError) => {
   fetch(url)
     .then((response) => {
@@ -14,7 +9,10 @@ const getData = (url, onGetSuccess, onGetError) => {
       return response.json();
     })
     .then((data) => onGetSuccess(data))
-    .catch((error) => catchDefault(error, onGetError));
+    .catch((error) => {
+      onGetError(error);
+      throw new Error(error);
+    });
 };
 
 const sendData = (url, onGetSuccess, onGetError, body, method = DEFAULT_METHOD) => {
@@ -25,7 +23,10 @@ const sendData = (url, onGetSuccess, onGetError, body, method = DEFAULT_METHOD) 
       }
       onGetSuccess();
     })
-    .catch((error) => catchDefault(error, onGetError));
+    .catch((error) => {
+      onGetError(error);
+      throw new Error(error);
+    });
 };
 
 export { getData, sendData };

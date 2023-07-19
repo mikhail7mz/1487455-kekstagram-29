@@ -1,14 +1,23 @@
 import { resetScaleValue, addScaleEditor } from './scale-editor.js';
 import { initEffects } from './effects-editor.js';
 import { pristineReset, pristineValidate, pristineInit } from './validate-image-editor.js';
-import { sendData } from '../data.js';
-import { showNotification } from '../notifications.js';
+import { sendData } from '../utils/data.js';
+import { showNotification } from '../utils/notifications.js';
 
 const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
-const NOTIFICATION_STATUS = {
-  success: 'success',
-  error: 'error'
+const NOTIFICATION_SETTINGS = {
+  success: {
+    status: 'success',
+    message: 'Изображение успешно загружено',
+    buttonText: 'Круто!'
+  },
+  error: {
+    status: 'error',
+    message: 'Ошибка загрузки файла',
+    buttonText: 'Попробовать ещё раз'
+  }
 };
+
 const SUBMIT_BUTTON_TEXT = {
   TRUE: 'Опубликовать',
   FALSE: 'Опубликовывается...'
@@ -32,7 +41,7 @@ const onEffectsListChange = (event) => initEffects(event.target.value);
 const closeEditImageForm = () => {
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeyDown);
+  document.removeEventListener('keydown', onDocumentKeydown);
   closeFormButton.removeEventListener('click', closeEditImageForm);
   imageEditorForm.reset();
   pristineReset();
@@ -44,23 +53,25 @@ const closeEditImageForm = () => {
 const openEditImageForm = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeyDown);
+  document.addEventListener('keydown', onDocumentKeydown);
   closeFormButton.addEventListener('click', closeEditImageForm);
 };
 
-function onDocumentKeyDown (evt) {
-  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper')) {
+function onDocumentKeydown (evt) {
+  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
   }
 }
 
 const onSendDataSuccess = () => {
-  showNotification(NOTIFICATION_STATUS.success);
+  const {status, message, buttonText} = NOTIFICATION_SETTINGS.success;
+  showNotification(status, message, buttonText);
   closeEditImageForm();
 };
 
 const onSendDataError = () => {
-  showNotification(NOTIFICATION_STATUS.error);
+  const {status, message, buttonText} = NOTIFICATION_SETTINGS.error;
+  showNotification(status, message, buttonText);
   setButtonState();
 };
 

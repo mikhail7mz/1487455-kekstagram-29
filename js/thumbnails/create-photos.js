@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomArrayElement, getRandomId} from '../utils.js';
+import {getRandomInteger, getRandomArrayElement, getRandomId} from '../utils/utils.js';
 
 const PHOTOS_QUANTITY = 25;
 const LIKES_MIN = 15;

@@ -11,7 +11,7 @@ let showingComments = 0;
 
 const onButtonCloseClick = () => closeBigPicture();
 
-const onDocumentKeyDown = (evt) => {
+const onDocumentKeydown = (evt) => {
   if(evt.key === 'Escape') {
     closeBigPicture();
   }
@@ -58,14 +58,14 @@ function closeBigPicture () {
   bigPicture.classList.add('hidden');
   commentsLoader.removeEventListener('click', onCommentsLoaderClick);
   buttonClose.removeEventListener('click', onButtonCloseClick);
-  document.removeEventListener('keydown', onDocumentKeyDown);
+  document.removeEventListener('keydown', onDocumentKeydown);
   showingComments = 0;
 }
 
 const openBigPicture = () => {
   commentsLoader.addEventListener('click', onCommentsLoaderClick);
   buttonClose.addEventListener('click', onButtonCloseClick);
-  document.addEventListener('keydown', onDocumentKeyDown);
+  document.addEventListener('keydown', onDocumentKeydown);
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
 };
