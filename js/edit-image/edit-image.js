@@ -23,8 +23,11 @@ const SUBMIT_BUTTON_TEXT = {
   FALSE: 'Опубликовывается...'
 };
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+
 const imageEditorForm = document.querySelector('.img-upload__form');
 const imageField = imageEditorForm.querySelector('.img-upload__input');
+const imagePreview = document.querySelector('.img-upload__preview img');
 const overlay = imageEditorForm.querySelector('.img-upload__overlay');
 const closeFormButton = imageEditorForm.querySelector('.img-upload__cancel');
 const effectsList = imageEditorForm.querySelector('.effects__list');
@@ -34,6 +37,16 @@ const submitButton = imageEditorForm.querySelector('.img-upload__submit');
 const setButtonState = (state = true) => {
   submitButton.disabled = !state;
   submitButton.textContent = SUBMIT_BUTTON_TEXT[state.toString().toUpperCase()];
+};
+
+const updateImage = () => {
+  const file = imageField.files[0];
+  const fileName = file.name.toLowerCase();
+  const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (isFileValid) {
+    imagePreview.src = URL.createObjectURL(file);
+  }
 };
 
 const onEffectsListChange = (event) => initEffects(event.target.value);
@@ -51,6 +64,7 @@ const closeEditImageForm = () => {
 };
 
 const openEditImageForm = () => {
+  updateImage();
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
