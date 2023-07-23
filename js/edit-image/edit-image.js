@@ -28,6 +28,7 @@ const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 const imageEditorForm = document.querySelector('.img-upload__form');
 const imageField = imageEditorForm.querySelector('.img-upload__input');
 const imagePreview = document.querySelector('.img-upload__preview img');
+const effectsPreviews = document.querySelectorAll('.effects__preview');
 const overlay = imageEditorForm.querySelector('.img-upload__overlay');
 const closeFormButton = imageEditorForm.querySelector('.img-upload__cancel');
 const effectsList = imageEditorForm.querySelector('.effects__list');
@@ -45,7 +46,11 @@ const updateImage = () => {
   const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
 
   if (isFileValid) {
-    imagePreview.src = URL.createObjectURL(file);
+    const fileUrl = URL.createObjectURL(file);
+    imagePreview.src = fileUrl;
+    effectsPreviews.forEach((preview) => {
+      preview.style.backgroundImage = `url("${fileUrl}")`;
+    });
   }
 };
 

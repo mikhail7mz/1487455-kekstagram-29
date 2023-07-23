@@ -28,9 +28,11 @@ const getFilteredData = (data, filterId) => {
 };
 
 const onFiltersFormClick = (evt, data) => {
-  const buttonId = evt.target.closest('.img-filters__button').id;
+  const buttonActive = evt.target.closest('.img-filters__button');
+  document.querySelector('.img-filters__button--active').classList.remove('img-filters__button--active');
+  buttonActive.classList.add('img-filters__button--active');
   removePictures();
-  renderPictures(getFilteredData(data, buttonId));
+  renderPictures(getFilteredData(data, buttonActive.id));
 };
 
 const initFilters = (data) => {
