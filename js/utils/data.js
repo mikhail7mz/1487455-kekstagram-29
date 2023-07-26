@@ -9,10 +9,7 @@ const getData = (url, onGetSuccess, onGetError) => {
       return response.json();
     })
     .then((data) => onGetSuccess(data))
-    .catch((error) => {
-      onGetError(error);
-      throw new Error(error);
-    });
+    .catch((error) => onGetError(error));
 };
 
 const sendData = (url, onGetSuccess, onGetError, body, method = DEFAULT_METHOD) => {
@@ -23,10 +20,7 @@ const sendData = (url, onGetSuccess, onGetError, body, method = DEFAULT_METHOD) 
       }
       onGetSuccess();
     })
-    .catch((error) => {
-      onGetError(error);
-      throw new Error(error);
-    });
+    .catch((error) => onGetError(error));
 };
 
 export { getData, sendData };

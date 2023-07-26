@@ -64,11 +64,7 @@ const createSlider = (effectsName) => {
     },
     step,
     start: max,
-    connect: 'lower',
-    format: {
-      to: (value) => value,
-      from: (value) => parseFloat(value, 10)
-    }
+    connect: 'lower'
   });
   slider.noUiSlider.on('update', () => {
     const saturation = slider.noUiSlider.get();
