@@ -12,14 +12,14 @@ const createNotificationTemplate = (status, message, buttonText) =>
 
 const onButtonCloseClick = () => removeNotification();
 
-const onNotificationClick = (evt, status) => {
-  if (!evt.target.closest(`.${status}__inner`)) {
+const onNotificationClick = (event, status) => {
+  if (!event.target.closest(`.${status}__inner`)) {
     removeNotification();
   }
 };
 
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape') {
+const onDocumentKeydown = (event) => {
+  if (event.key === 'Escape') {
     removeNotification();
   }
 };
@@ -37,7 +37,7 @@ const showNotification = (status, message, buttonText) => {
     notification.querySelector('button').addEventListener('click', onButtonCloseClick);
   }
 
-  notification.addEventListener('click', (evt) => onNotificationClick(evt, status));
+  notification.addEventListener('click', (event) => onNotificationClick(event, status));
 
   document.addEventListener('keydown', onDocumentKeydown);
 

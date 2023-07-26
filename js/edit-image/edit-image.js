@@ -15,6 +15,11 @@ const NOTIFICATION_SETTINGS = {
     status: 'error',
     message: 'Ошибка загрузки файла',
     buttonText: 'Попробовать ещё раз'
+  },
+  fileInvalid: {
+    status: 'error',
+    message: 'Некорректный формат файла',
+    buttonText: 'Закрыть'
   }
 };
 
@@ -23,8 +28,12 @@ const SUBMIT_BUTTON_TEXT = {
   FALSE: 'Опубликовывается...'
 };
 
+const FILE_TYPES = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+
 const imageEditorForm = document.querySelector('.img-upload__form');
 const imageField = imageEditorForm.querySelector('.img-upload__input');
+const imagePreview = document.querySelector('.img-upload__preview img');
+const effectsPreviews = document.querySelectorAll('.effects__preview');
 const overlay = imageEditorForm.querySelector('.img-upload__overlay');
 const closeFormButton = imageEditorForm.querySelector('.img-upload__cancel');
 const effectsList = imageEditorForm.querySelector('.effects__list');
@@ -57,8 +66,31 @@ const openEditImageForm = () => {
   closeFormButton.addEventListener('click', closeEditImageForm);
 };
 
-function onDocumentKeydown (evt) {
-  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
+const updateImage = ({target}) => {
+  const file = target.files[0];
+  const fileName = file.name.toLowerCase();
+  const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (!isFileValid) {
+    const {status, message, buttonText} = NOTIFICATION_SETTINGS.fileInvalid;
+    showNotification(status, message, buttonText);
+    return;
+  }
+
+  const fileUrl = URL.createObjectURL(file);
+  imagePreview.src = fileUrl;
+  effectsPreviews.forEach((preview) => {
+    preview.style.backgroundImage = `url("${fileUrl}")`;
+  });
+  openEditImageForm();
+};
+
+const onImageFieldChange = (event) => {
+  updateImage(event);
+};
+
+function onDocumentKeydown (event) {
+  if(event.key === 'Escape' && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
   }
 }
@@ -75,10 +107,10 @@ const onSendDataError = () => {
   setButtonState();
 };
 
-const onUploadFormSubmit = (evt) => {
-  evt.preventDefault();
+const onUploadFormSubmit = (event) => {
+  event.preventDefault();
   if (pristineValidate()) {
-    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(evt.target));
+    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(event.target));
     setButtonState(false);
   }
 };
@@ -88,7 +120,7 @@ const initImageEditor = () => {
   addScaleEditor();
   initEffects(currentEffectValue);
   effectsList.addEventListener('change', onEffectsListChange);
-  imageField.addEventListener('change', openEditImageForm);
+  imageField.addEventListener('change', onImageFieldChange);
   imageEditorForm.addEventListener('submit', onUploadFormSubmit);
 };
 

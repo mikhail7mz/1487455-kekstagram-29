@@ -19,7 +19,7 @@ const resetScaleValue = () => {
   setScaleValue();
 };
 
-const buttonLessClickHandler = (event) => {
+const onButtonLessClick = (event) => {
   event.preventDefault();
   if (scaleValue > SCALE_MIN) {
     scaleValue -= SCALE_STEP;
@@ -27,7 +27,7 @@ const buttonLessClickHandler = (event) => {
   }
 };
 
-const buttonMoreClickHandler = (event) => {
+const onButtonMoreClick = (event) => {
   event.preventDefault();
   if (scaleValue < SCALE_MAX) {
     scaleValue += SCALE_STEP;
@@ -36,8 +36,8 @@ const buttonMoreClickHandler = (event) => {
 };
 
 const addScaleEditor = () => {
-  buttonLess.addEventListener('click', buttonLessClickHandler);
-  buttonMore.addEventListener('click', buttonMoreClickHandler);
+  buttonLess.addEventListener('click', onButtonLessClick);
+  buttonMore.addEventListener('click', onButtonMoreClick);
 };
 
 export {resetScaleValue, addScaleEditor};

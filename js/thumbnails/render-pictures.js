@@ -1,6 +1,7 @@
 import { renderBigPicture } from './big-picture.js';
 import { getData } from '../utils/data.js';
 import { showNotification } from '../utils/notifications.js';
+import { initFilters } from './filters.js';
 
 const GET_DATA_SETTINGS = {
   url: 'https://29.javascript.pages.academy/kekstagram/data',
@@ -23,10 +24,15 @@ const createPicture = (photo) => {
   return picture;
 };
 
-const onGetDataSuccess = (photos) => {
+const renderPictures = (photos) => {
   const picturesFragment = document.createDocumentFragment();
   photos.forEach((photo) => picturesFragment.appendChild(createPicture(photo)));
   pictures.appendChild(picturesFragment);
+};
+
+const onGetDataSuccess = (photos) => {
+  renderPictures(photos);
+  initFilters(photos);
 };
 
 const onGetDataError = () => {
@@ -34,6 +40,6 @@ const onGetDataError = () => {
   showNotification('error', errorMessage, errorButtonText);
 };
 
-const renderPictures = () => getData(GET_DATA_SETTINGS.url, onGetDataSuccess, onGetDataError);
+const initPictures = () => getData(GET_DATA_SETTINGS.url, onGetDataSuccess, onGetDataError);
 
-export {renderPictures};
+export {renderPictures, initPictures};
