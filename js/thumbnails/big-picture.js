@@ -53,6 +53,10 @@ const onCommentsLoaderClick = (event) => {
   renderComments();
 };
 
+/*
+  Функции closeBigPicture и обработчики событий ссылаются друг на друга.
+  Во избежании ошибок линтера closeBigPicture написана декларативным способом.
+*/
 function closeBigPicture () {
   document.body.classList.remove('modal-open');
   bigPicture.classList.add('hidden');

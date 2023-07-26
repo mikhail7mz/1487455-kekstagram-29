@@ -89,6 +89,10 @@ const onImageFieldChange = (event) => {
   updateImage(event);
 };
 
+/*
+  Функции onDocumentKeydown и closeEditImageForm ссылаются друг на друга.
+  Во избежании ошибок линтера onDocumentKeydown написана декларативным способом.
+*/
 function onDocumentKeydown (event) {
   if(event.key === 'Escape' && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
