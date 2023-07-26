@@ -24,6 +24,10 @@ const onDocumentKeydown = (event) => {
   }
 };
 
+/*
+  Функции removeNotification и onDocumentKeydown ссылаются друг на друга.
+  Во избежании ошибок линтера removeNotification написана декларативным способом.
+*/
 function removeNotification () {
   notification.remove();
   document.body.classList.remove('modal-open');
