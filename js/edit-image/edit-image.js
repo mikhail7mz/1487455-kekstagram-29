@@ -15,6 +15,11 @@ const NOTIFICATION_SETTINGS = {
     status: 'error',
     message: 'Ошибка загрузки файла',
     buttonText: 'Попробовать ещё раз'
+  },
+  fileInvalid: {
+    status: 'error',
+    message: 'Некорректный формат файла',
+    buttonText: 'Закрыть'
   }
 };
 
@@ -23,7 +28,7 @@ const SUBMIT_BUTTON_TEXT = {
   FALSE: 'Опубликовывается...'
 };
 
-const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const FILE_TYPES = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
 const imageEditorForm = document.querySelector('.img-upload__form');
 const imageField = imageEditorForm.querySelector('.img-upload__input');
@@ -38,20 +43,6 @@ const submitButton = imageEditorForm.querySelector('.img-upload__submit');
 const setButtonState = (state = true) => {
   submitButton.disabled = !state;
   submitButton.textContent = SUBMIT_BUTTON_TEXT[state.toString().toUpperCase()];
-};
-
-const updateImage = () => {
-  const file = imageField.files[0];
-  const fileName = file.name.toLowerCase();
-  const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
-
-  if (isFileValid) {
-    const fileUrl = URL.createObjectURL(file);
-    imagePreview.src = fileUrl;
-    effectsPreviews.forEach((preview) => {
-      preview.style.backgroundImage = `url("${fileUrl}")`;
-    });
-  }
 };
 
 const onEffectsListChange = (event) => initEffects(event.target.value);
@@ -69,15 +60,37 @@ const closeEditImageForm = () => {
 };
 
 const openEditImageForm = () => {
-  updateImage();
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
   closeFormButton.addEventListener('click', closeEditImageForm);
 };
 
-function onDocumentKeydown (evt) {
-  if(evt.key === 'Escape' && !evt.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
+const updateImage = ({target}) => {
+  const file = target.files[0];
+  const fileName = file.name.toLowerCase();
+  const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
+
+  if (!isFileValid) {
+    const {status, message, buttonText} = NOTIFICATION_SETTINGS.fileInvalid;
+    showNotification(status, message, buttonText);
+    return;
+  }
+
+  const fileUrl = URL.createObjectURL(file);
+  imagePreview.src = fileUrl;
+  effectsPreviews.forEach((preview) => {
+    preview.style.backgroundImage = `url("${fileUrl}")`;
+  });
+  openEditImageForm();
+};
+
+const onImageFieldChange = (event) => {
+  updateImage(event);
+};
+
+function onDocumentKeydown (event) {
+  if(event.key === 'Escape' && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
   }
 }
@@ -94,10 +107,10 @@ const onSendDataError = () => {
   setButtonState();
 };
 
-const onUploadFormSubmit = (evt) => {
-  evt.preventDefault();
+const onUploadFormSubmit = (event) => {
+  event.preventDefault();
   if (pristineValidate()) {
-    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(evt.target));
+    sendData(SEND_DATA_URL, onSendDataSuccess, onSendDataError, new FormData(event.target));
     setButtonState(false);
   }
 };
@@ -107,7 +120,7 @@ const initImageEditor = () => {
   addScaleEditor();
   initEffects(currentEffectValue);
   effectsList.addEventListener('change', onEffectsListChange);
-  imageField.addEventListener('change', openEditImageForm);
+  imageField.addEventListener('change', onImageFieldChange);
   imageEditorForm.addEventListener('submit', onUploadFormSubmit);
 };
 

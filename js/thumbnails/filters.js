@@ -1,6 +1,7 @@
 import { renderPictures } from './render-pictures.js';
 import { debounce } from '../utils/utils.js';
 
+const RANDOM_PICTURES_NUMBER = 10;
 const RENDER_DELAY = 500;
 const FilterType = {
   RANDOM: 'filter-random',
@@ -19,7 +20,7 @@ const removePictures = () => {
 const getFilteredData = (data, filterId) => {
   switch (filterId) {
     case FilterType.RANDOM:
-      return data.slice().sort(() => Math.random() - 0.5).slice(0, 10);
+      return data.slice().sort(() => Math.random() - 0.5).slice(0, RANDOM_PICTURES_NUMBER);
     case FilterType.DISCUSSED:
       return data.slice().sort((a,b) => b.comments.length - a.comments.length);
     default :
@@ -27,17 +28,19 @@ const getFilteredData = (data, filterId) => {
   }
 };
 
-const onFiltersFormClick = (evt, data) => {
-  const buttonActive = evt.target.closest('.img-filters__button');
+const onFiltersFormClick = ({target}, data) => {
+  if (!target.closest('.img-filters__button') || target.closest('.img-filters__button--active')) {
+    return;
+  }
   document.querySelector('.img-filters__button--active').classList.remove('img-filters__button--active');
-  buttonActive.classList.add('img-filters__button--active');
+  target.classList.add('img-filters__button--active');
   removePictures();
-  renderPictures(getFilteredData(data, buttonActive.id));
+  renderPictures(getFilteredData(data, target.id));
 };
 
 const initFilters = (data) => {
   filters.classList.remove('img-filters--inactive');
-  filtersForm.addEventListener('click', debounce((evt) => onFiltersFormClick(evt, data), RENDER_DELAY));
+  filtersForm.addEventListener('click', debounce((event) => onFiltersFormClick(event, data), RENDER_DELAY));
 };
 
 export {initFilters};

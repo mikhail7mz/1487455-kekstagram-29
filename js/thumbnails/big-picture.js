@@ -11,8 +11,8 @@ let showingComments = 0;
 
 const onButtonCloseClick = () => closeBigPicture();
 
-const onDocumentKeydown = (evt) => {
-  if(evt.key === 'Escape') {
+const onDocumentKeydown = (event) => {
+  if(event.key === 'Escape') {
     closeBigPicture();
   }
 };
@@ -48,8 +48,8 @@ const renderComments = () => {
   setButtonState();
 };
 
-const onCommentsLoaderClick = (evt) => {
-  evt.preventDefault();
+const onCommentsLoaderClick = (event) => {
+  event.preventDefault();
   renderComments();
 };
 
