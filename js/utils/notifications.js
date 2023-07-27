@@ -1,4 +1,4 @@
-import {createElement} from './utils.js';
+import {createElement, isEscape} from './utils.js';
 
 let notification = null;
 
@@ -10,16 +10,21 @@ const createNotificationTemplate = (status, message, buttonText) =>
     </div>
   </section>`;
 
-const onButtonCloseClick = () => removeNotification();
+const onButtonCloseClick = (event) => {
+  event.preventDefault();
+  removeNotification();
+};
 
 const onNotificationClick = (event, status) => {
+  event.preventDefault();
   if (!event.target.closest(`.${status}__inner`)) {
     removeNotification();
   }
 };
 
 const onDocumentKeydown = (event) => {
-  if (event.key === 'Escape') {
+  event.preventDefault();
+  if (isEscape(event)) {
     removeNotification();
   }
 };

@@ -1,3 +1,5 @@
+import { isEscape } from '../utils/utils.js';
+
 const COMMENTS_NUMBER = 5;
 
 const bigPicture = document.querySelector('.big-picture');
@@ -9,10 +11,14 @@ const commentsLoader = bigPicture.querySelector('.comments-loader');
 let commentsData = [];
 let showingComments = 0;
 
-const onButtonCloseClick = () => closeBigPicture();
+const onButtonCloseClick = (event) => {
+  event.preventDefault();
+  closeBigPicture();
+};
 
 const onDocumentKeydown = (event) => {
-  if(event.key === 'Escape') {
+  event.preventDefault();
+  if(isEscape(event)) {
     closeBigPicture();
   }
 };

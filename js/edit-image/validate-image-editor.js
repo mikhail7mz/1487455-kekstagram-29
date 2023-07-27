@@ -17,19 +17,19 @@ const pristine = new Pristine(imageEditorForm, {
   errorTextClass: 'text__error'
 });
 
-const normalizeHashtags = (hashtags) => hashtags.trim().toLowerCase().split(' ').filter((tag) => Boolean(tag));
+const createHashtags = (value) => value.trim().toLowerCase().split(' ').filter((tag) => tag);
 
-const validateHashtagsByPattern = (hashtags) => {
-  if (hashtags.length === 0) {
+const validateHashtagsByPattern = (value) => {
+  if (!value.length) {
     return true;
   }
-  return normalizeHashtags(hashtags).every((hashtag) => HASHTAG_PATTERN.test(hashtag));
+  return createHashtags(value).every((hashtag) => HASHTAG_PATTERN.test(hashtag));
 };
 
-const validateHashtagsByLength = (hashtags) => normalizeHashtags(hashtags).length <= HASHTAGS_MAX_LENGTH;
+const validateHashtagsByLength = (value) => createHashtags(value).length <= HASHTAGS_MAX_LENGTH;
 
-const validateHashtagsByUniqueness = (hashtags) => {
-  hashtags = normalizeHashtags(hashtags);
+const validateHashtagsByUniqueness = (value) => {
+  const hashtags = createHashtags(value);
   return hashtags.length === new Set(hashtags).size;
 };
 

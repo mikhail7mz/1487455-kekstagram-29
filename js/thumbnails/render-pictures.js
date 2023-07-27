@@ -3,11 +3,11 @@ import { getData } from '../utils/data.js';
 import { showNotification } from '../utils/notifications.js';
 import { initFilters } from './filters.js';
 
-const GET_DATA_SETTINGS = {
-  url: 'https://29.javascript.pages.academy/kekstagram/data',
-  errorMessage: 'Не удалось загрузить данные. Попробуйте обновить страницу',
-  errorButtonText: 'Закрыть'
-};
+const GET_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/data';
+
+const GET_DATA_ERROR_STATUS = 'error';
+const GET_DATA_ERROR_MESSAGE = 'Не удалось загрузить данные. Попробуйте обновить страницу';
+const GET_DATA_ERROR_BUTTON_TEXT = 'Закрыть';
 
 const pictures = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
@@ -35,11 +35,8 @@ const onGetDataSuccess = (photos) => {
   initFilters(photos);
 };
 
-const onGetDataError = () => {
-  const {errorMessage, errorButtonText} = GET_DATA_SETTINGS;
-  showNotification('error', errorMessage, errorButtonText);
-};
+const onGetDataError = () => showNotification(GET_DATA_ERROR_STATUS, GET_DATA_ERROR_MESSAGE, GET_DATA_ERROR_BUTTON_TEXT);
 
-const initPictures = () => getData(GET_DATA_SETTINGS.url, onGetDataSuccess, onGetDataError);
+const initPictures = () => getData(GET_DATA_URL, onGetDataSuccess, onGetDataError);
 
 export {renderPictures, initPictures};

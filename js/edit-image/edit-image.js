@@ -3,30 +3,24 @@ import { initEffects } from './effects-editor.js';
 import { pristineReset, pristineValidate, pristineInit } from './validate-image-editor.js';
 import { sendData } from '../utils/data.js';
 import { showNotification } from '../utils/notifications.js';
+import { isEscape } from '../utils/utils.js';
 
 const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
-const NOTIFICATION_SETTINGS = {
-  success: {
-    status: 'success',
-    message: 'Изображение успешно загружено',
-    buttonText: 'Круто!'
-  },
-  error: {
-    status: 'error',
-    message: 'Ошибка загрузки файла',
-    buttonText: 'Попробовать ещё раз'
-  },
-  fileInvalid: {
-    status: 'error',
-    message: 'Некорректный формат файла',
-    buttonText: 'Закрыть'
-  }
-};
 
-const SUBMIT_BUTTON_TEXT = {
-  TRUE: 'Опубликовать',
-  FALSE: 'Опубликовывается...'
-};
+const NOTIFICATION_SUCCESS_STATUS = 'success';
+const NOTIFICATION_SUCCESS_MESSAGE = 'Изображение успешно загружено';
+const NOTIFICATION_SUCCESS_BUTTON_TEXT = 'Круто!';
+
+const NOTIFICATION_ERROR_STATUS = 'error';
+const NOTIFICATION_ERROR_MESSAGE = 'Ошибка загрузки файла';
+const NOTIFICATION_ERROR_BUTTON_TEXT = 'Попробовать ещё раз';
+
+const NOTIFICATION_FILE_INVALID_STATUS = 'error';
+const NOTIFICATION_FILE_INVALID_MESSAGE = 'Некорректный формат файла';
+const NOTIFICATION_FILE_INVALID_BUTTON_TEXT = 'Закрыть';
+
+const SUBMIT_BUTTON_TEXT_DEFAULT = 'Опубликовать';
+const SUBMIT_BUTTON_TEXT_SENDING = 'Опубликовывается...';
 
 const FILE_TYPES = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
 
@@ -42,29 +36,44 @@ const submitButton = imageEditorForm.querySelector('.img-upload__submit');
 
 const setButtonState = (state = true) => {
   submitButton.disabled = !state;
-  submitButton.textContent = SUBMIT_BUTTON_TEXT[state.toString().toUpperCase()];
+  submitButton.textContent = state ? SUBMIT_BUTTON_TEXT_DEFAULT : SUBMIT_BUTTON_TEXT_SENDING;
 };
 
 const onEffectsListChange = (event) => initEffects(event.target.value);
 
-const closeEditImageForm = () => {
-  overlay.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-  closeFormButton.removeEventListener('click', closeEditImageForm);
-  imageEditorForm.reset();
-  pristineReset();
-  resetScaleValue();
-  setButtonState();
-  initEffects(currentEffectValue);
+const onCloseFormButtonClick = (event) => {
+  event.preventDefault();
+  closeEditImageForm();
+};
+
+const onDocumentKeydown = (event) => {
+  if(isEscape(event) && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
+    closeEditImageForm();
+  }
 };
 
 const openEditImageForm = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
-  closeFormButton.addEventListener('click', closeEditImageForm);
+  closeFormButton.addEventListener('click', onCloseFormButtonClick);
 };
+
+/*
+  Функции onDocumentKeydown и closeEditImageForm ссылаются друг на друга.
+  Во избежании ошибок линтера closeEditImageForm написана декларативным способом.
+*/
+function closeEditImageForm () {
+  overlay.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onDocumentKeydown);
+  closeFormButton.removeEventListener('click', onCloseFormButtonClick);
+  imageEditorForm.reset();
+  pristineReset();
+  resetScaleValue();
+  setButtonState();
+  initEffects(currentEffectValue);
+}
 
 const updateImage = ({target}) => {
   const file = target.files[0];
@@ -72,8 +81,7 @@ const updateImage = ({target}) => {
   const isFileValid = FILE_TYPES.some((type) => fileName.endsWith(type));
 
   if (!isFileValid) {
-    const {status, message, buttonText} = NOTIFICATION_SETTINGS.fileInvalid;
-    showNotification(status, message, buttonText);
+    showNotification(NOTIFICATION_FILE_INVALID_STATUS, NOTIFICATION_FILE_INVALID_MESSAGE, NOTIFICATION_FILE_INVALID_BUTTON_TEXT);
     return;
   }
 
@@ -85,29 +93,15 @@ const updateImage = ({target}) => {
   openEditImageForm();
 };
 
-const onImageFieldChange = (event) => {
-  updateImage(event);
-};
-
-/*
-  Функции onDocumentKeydown и closeEditImageForm ссылаются друг на друга.
-  Во избежании ошибок линтера onDocumentKeydown написана декларативным способом.
-*/
-function onDocumentKeydown (event) {
-  if(event.key === 'Escape' && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
-    closeEditImageForm();
-  }
-}
+const onImageFieldChange = (event) => updateImage(event);
 
 const onSendDataSuccess = () => {
-  const {status, message, buttonText} = NOTIFICATION_SETTINGS.success;
-  showNotification(status, message, buttonText);
+  showNotification(NOTIFICATION_SUCCESS_STATUS, NOTIFICATION_SUCCESS_MESSAGE, NOTIFICATION_SUCCESS_BUTTON_TEXT);
   closeEditImageForm();
 };
 
 const onSendDataError = () => {
-  const {status, message, buttonText} = NOTIFICATION_SETTINGS.error;
-  showNotification(status, message, buttonText);
+  showNotification(NOTIFICATION_ERROR_STATUS, NOTIFICATION_ERROR_MESSAGE, NOTIFICATION_ERROR_BUTTON_TEXT);
   setButtonState();
 };
 
