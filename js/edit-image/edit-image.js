@@ -1,9 +1,9 @@
-import { resetScaleValue, addScaleEditor } from './scale-editor.js';
-import { initEffects } from './effects-editor.js';
-import { pristineReset, pristineValidate, pristineInit } from './validate-image-editor.js';
-import { sendData } from '../utils/data.js';
-import { showNotification } from '../utils/notifications.js';
-import { isEscape } from '../utils/utils.js';
+import {resetScaleValue, addScaleEditor} from './scale-editor.js';
+import {initEffects} from './effects-editor.js';
+import {pristineReset, pristineValidate, pristineInit} from './validate-image-editor.js';
+import {sendData} from '../utils/data.js';
+import {showNotification} from '../utils/notifications.js';
+import {isEscape} from '../utils/utils.js';
 
 const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
 
@@ -47,7 +47,7 @@ const onCloseFormButtonClick = (event) => {
 };
 
 const onDocumentKeydown = (event) => {
-  if(isEscape(event) && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
+  if (isEscape(event) && !event.target.closest('.img-upload__field-wrapper') && !document.querySelector('.error')) {
     closeEditImageForm();
   }
 };

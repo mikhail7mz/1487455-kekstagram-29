@@ -1,4 +1,4 @@
-import { isEscape } from '../utils/utils.js';
+import {isEscape} from '../utils/utils.js';
 
 const COMMENTS_NUMBER = 5;
 
@@ -18,7 +18,7 @@ const onButtonCloseClick = (event) => {
 
 const onDocumentKeydown = (event) => {
   event.preventDefault();
-  if(isEscape(event)) {
+  if (isEscape(event)) {
     closeBigPicture();
   }
 };

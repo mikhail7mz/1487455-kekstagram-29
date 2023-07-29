@@ -1,7 +1,7 @@
-import { renderBigPicture } from './big-picture.js';
-import { getData } from '../utils/data.js';
-import { showNotification } from '../utils/notifications.js';
-import { initFilters } from './filters.js';
+import {renderBigPicture} from './big-picture.js';
+import {getData} from '../utils/data.js';
+import {showNotification} from '../utils/notifications.js';
+import {initFilters} from './filters.js';
 
 const GET_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/data';
 

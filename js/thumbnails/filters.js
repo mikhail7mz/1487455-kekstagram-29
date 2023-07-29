@@ -1,5 +1,5 @@
-import { renderPictures } from './render-pictures.js';
-import { debounce } from '../utils/utils.js';
+import {renderPictures} from './render-pictures.js';
+import {debounce} from '../utils/utils.js';
 
 const RANDOM_PICTURES_NUMBER = 10;
 const RENDER_DELAY = 500;

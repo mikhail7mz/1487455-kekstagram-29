@@ -23,4 +23,4 @@ const sendData = (url, onGetSuccess, onGetError, body, method = DEFAULT_METHOD) 
     .catch((error) => onGetError(error));
 };
 
-export { getData, sendData };
+export {getData, sendData};
