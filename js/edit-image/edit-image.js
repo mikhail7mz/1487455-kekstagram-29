@@ -5,7 +5,7 @@ import {sendData} from '../utils/data.js';
 import {showNotification} from '../utils/notifications.js';
 import {isEscape} from '../utils/utils.js';
 
-const SEND_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/';
+const SEND_DATA_URL = 'https://29.javascript.htmlacademy.pro/kekstagram/';
 
 const NOTIFICATION_SUCCESS_STATUS = 'success';
 const NOTIFICATION_SUCCESS_MESSAGE = 'Изображение успешно загружено';

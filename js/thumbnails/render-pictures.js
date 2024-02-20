@@ -3,7 +3,7 @@ import {getData} from '../utils/data.js';
 import {showNotification} from '../utils/notifications.js';
 import {initFilters} from './filters.js';
 
-const GET_DATA_URL = 'https://29.javascript.pages.academy/kekstagram/data';
+const GET_DATA_URL = 'https://29.javascript.htmlacademy.pro/kekstagram/data';
 
 const GET_DATA_ERROR_STATUS = 'error';
 const GET_DATA_ERROR_MESSAGE = 'Не удалось загрузить данные. Попробуйте обновить страницу';
